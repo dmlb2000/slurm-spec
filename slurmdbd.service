@@ -1,0 +1,11 @@
+[Unit]
+Description=slurmdbd
+After=syslog.target network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/slurmdbd
+
+[Install]
+WantedBy=multi-user.target
+
