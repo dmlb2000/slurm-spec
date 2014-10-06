@@ -16,7 +16,7 @@ BuildRequires:	mysql-devel, hwloc-devel, hdf5-devel, libtool
 BuildRequires:	perl(ExtUtils::MakeMaker), freeipmi-devel, autoconf, automake
 BuildRequires:	munge-devel, lua-devel, pam-devel, rrdtool-devel, m4, dos2unix
 %ifarch %{ix86} x86_64
-BuildRequires:  numactl-devel
+BuildRequires:	numactl-devel
 %endif
 %if 0
 BuildRequires:	libumad-devel, libmad-devel
@@ -56,12 +56,12 @@ Requires: slurm = %{version}-%{release}
 Slurm NULL authentication module
 
 %package munge
-Summary: Slurm authentication and crypto implementation using Munge
+Summary: Slurm authentication and cryptography implementation using Munge
 Group: System Environment/Base
 Requires: slurm = %{version}-%{release}, munge
 BuildRequires: munge-devel munge-libs
 %description munge
-Slurm authentication and crypto implementation using Munge. Used to
+Slurm authentication and cryptography implementation using Munge. Used to
 authenticate user originating an RPC, digitally sign and/or encrypt messages
 
 %package pam_slurm
@@ -106,10 +106,10 @@ Group: Development/System
 Requires: slurm = %{version}-%{release}
 %description sjstat
 Perl tool to print Slurm job state information. The output is designed to give
-information on the resource usage and availablilty, as well as information
+information on the resource usage and availability, as well as information
 about jobs that are currently active on the machine. This output is built
 using the Slurm utilities, sinfo, squeue and scontrol, the man pages for these
-utilites will provide more information and greater depth of understanding
+utilities will provide more information and greater depth of understanding
 
 %package slurmdbd
 Summary: Slurm database daemon
@@ -187,7 +187,6 @@ mv %{buildroot}%{_libdir}/perl5/S* %{buildroot}%{perl_vendorarch}/
 mv %{buildroot}%{_libdir}/perl5/auto %{buildroot}%{perl_vendorarch}/
 chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurm/Slurm.so
 chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurmdb/Slurmdb.so
-mv %{buildroot}%{_libdir}/perl5/config* %{buildroot}%{perl_vendorlib}/
 %if 0%{?fedora} > 15
 mkdir -vp %{buildroot}%{_unitdir}
 install -m 644 -p %{SOURCE1} %{buildroot}%{_unitdir}/
@@ -256,6 +255,10 @@ rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurm/.packlist
 rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurmdb/.packlist
 rm -f %{buildroot}/%{_libdir}/perl5/perllocal.pod
 rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurm*/Slurm*.bs
+
+# fix this for slurmdb direct package
+mv %{buildroot}%{_libdir}/perl5/config* %{buildroot}%{_sysconfdir}/
+ln -s %{_sysconfdir}/config.slurmdb.pl %{buildroot}/%{perl_vendorlib}/config.slurmdb.pl
 
 %post
 /sbin/ldconfig
@@ -560,7 +563,8 @@ fi
 %files slurmdb-direct
 %defattr(-,root,root,0755)
 %doc %{slurmdocs}
-%config (noreplace) %{perl_vendorlib}/config.slurmdb.pl
+%config (noreplace) %{_sysconfdir}/config.slurmdb.pl
+%{perl_vendorlib}/config.slurmdb.pl
 %{_sbindir}/moab_2_slurmdb
 
 %files sql
