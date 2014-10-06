@@ -12,9 +12,12 @@ Source2:	slurmctld.service
 Source3:	slurmdbd.service
 
 BuildRequires:	python, gtk2-devel, ncurses-devel, readline-devel, openssl-devel
-BuildRequires:	mysql-devel, numactl-devel, hwloc-devel, hdf5-devel, libtool
+BuildRequires:	mysql-devel, hwloc-devel, hdf5-devel, libtool
 BuildRequires:	perl(ExtUtils::MakeMaker), freeipmi-devel, autoconf, automake
-BuildRequires:	munge-devel, lua-devel, pam-devel, rrdtool-devel, m4
+BuildRequires:	munge-devel, lua-devel, pam-devel, rrdtool-devel, m4, dos2unix
+%ifarch %{ix86} x86_64
+BuildRequires:  numactl-devel
+%endif
 %if 0
 BuildRequires:	libumad-devel, libmad-devel
 %endif
@@ -40,7 +43,7 @@ scheduling and accounting modules
 %package devel
 Summary: Development package for Slurm
 Group: Development/System
-Requires: slurm
+Requires: slurm = %{version}-%{release}, pkgconfig
 %description devel
 Development package for Slurm.  This package includes the header files
 and static libraries for the Slurm API
@@ -48,14 +51,14 @@ and static libraries for the Slurm API
 %package auth-none
 Summary: Slurm auth NULL implementation (no authentication)
 Group: System Environment/Base
-Requires: slurm
+Requires: slurm = %{version}-%{release}
 %description auth-none
 Slurm NULL authentication module
 
 %package munge
 Summary: Slurm authentication and crypto implementation using Munge
 Group: System Environment/Base
-Requires: slurm munge
+Requires: slurm = %{version}-%{release}, munge
 BuildRequires: munge-devel munge-libs
 %description munge
 Slurm authentication and crypto implementation using Munge. Used to
@@ -64,7 +67,7 @@ authenticate user originating an RPC, digitally sign and/or encrypt messages
 %package pam_slurm
 Summary: PAM module for restricting access to compute nodes via Slurm
 Group: System Environment/Base
-Requires: slurm slurm-devel
+Requires: slurm = %{version}-%{release}
 BuildRequires: pam-devel
 %description pam_slurm
 This module restricts access to compute nodes in a cluster where Slurm is in
@@ -75,7 +78,7 @@ according to the Slurm
 %package perlapi
 Summary: Perl API to Slurm
 Group: Development/System
-Requires: slurm
+Requires: slurm = %{version}-%{release}
 %description perlapi
 Perl API package for Slurm.  This package includes the perl API to provide a
 helpful interface to Slurm through Perl
@@ -92,7 +95,7 @@ are in other packages
 %package sjobexit
 Summary: Slurm job exit code management tools
 Group: Development/System
-Requires: slurm-perlapi
+Requires: slurm-perlapi = %{version}-%{release}
 %description sjobexit
 Slurm job exit code management tools. Enables users to alter job exit code
 information for completed jobs
@@ -100,7 +103,7 @@ information for completed jobs
 %package sjstat
 Summary: Perl tool to print Slurm job state information
 Group: Development/System
-Requires: slurm
+Requires: slurm = %{version}-%{release}
 %description sjstat
 Perl tool to print Slurm job state information. The output is designed to give
 information on the resource usage and availablilty, as well as information
@@ -111,7 +114,8 @@ utilites will provide more information and greater depth of understanding
 %package slurmdbd
 Summary: Slurm database daemon
 Group: System Environment/Base
-Requires: slurm-plugins slurm-sql
+Requires: slurm-plugins = %{version}-%{release}
+Requires: slurm-sql = %{version}-%{release}
 %description slurmdbd
 Slurm database daemon. Used to accept and process database RPCs and upload
 database changes to slurmctld daemons on each cluster
@@ -119,7 +123,7 @@ database changes to slurmctld daemons on each cluster
 %package slurmdb-direct
 Summary: Wrappers to write directly to the slurmdb
 Group: Development/System
-Requires: slurm-perlapi
+Requires: slurm-perlapi = %{version}-%{release}
 %description slurmdb-direct
 Wrappers to write directly to the slurmdb
 
@@ -130,16 +134,16 @@ Group: System Environment/Base
 Slurm SQL support. Contains interfaces to MySQL.
 
 %package torque
-Summary: Torque/PBS wrappers for transitition from Torque/PBS to Slurm
+Summary: Torque/PBS wrappers for transition from Torque/PBS to Slurm
 Group: Development/System
-Requires: slurm-perlapi
+Requires: slurm-perlapi = %{version}-%{release}
 %description torque
 Torque wrapper scripts used for helping migrate from Torque/PBS to Slurm
 
 %package lua
 Summary: Slurm lua bindings
 Group: System Environment/Base
-Requires: slurm lua
+Requires: slurm = %{version}-%{release}, lua
 BuildRequires: lua-devel
 %description lua
 Slurm lua bindings
@@ -156,6 +160,11 @@ Includes the Slurm proctrack/lua and job_submit/lua plugin
 for x in auxdir/*.m4 ; do
   sed -i 's/-Wl,-rpath -Wl,[^ ]* //' $x
 done
+for x in contribs/perlapi/libslurm*/perl/Makefile.PL.in ; do
+  sed -i 's/-Wl,-rpath,[^ ]*\([ "]\)/\1/g' $x
+done
+dos2unix ./contribs/torque/qalter.pl
+dos2unix ./contribs/torque/qrerun.pl
 autoreconf
 %configure \
   --with-ssl \
@@ -173,10 +182,12 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 make install-contrib DESTDIR=%{buildroot}
 
-mkdir -p %{buildroot}%{perl_vendorarch}
+mkdir -p %{buildroot}%{perl_vendorarch} %{buildroot}%{perl_vendorlib}
 mv %{buildroot}%{_libdir}/perl5/S* %{buildroot}%{perl_vendorarch}/
 mv %{buildroot}%{_libdir}/perl5/auto %{buildroot}%{perl_vendorarch}/
-mv %{buildroot}%{_libdir}/perl5/config* %{buildroot}%{perl_vendorarch}/
+chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurm/Slurm.so
+chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurmdb/Slurmdb.so
+mv %{buildroot}%{_libdir}/perl5/config* %{buildroot}%{perl_vendorlib}/
 %if 0%{?fedora} > 15
 mkdir -vp %{buildroot}%{_unitdir}
 install -m 644 -p %{SOURCE1} %{buildroot}%{_unitdir}/
@@ -240,8 +251,11 @@ rm -f %{buildroot}/%{_libdir}/slurm/job_submit_defaults.so
 rm -f %{buildroot}/%{_libdir}/slurm/job_submit_logging.so
 rm -f %{buildroot}/%{_libdir}/slurm/job_submit_partition.so
 
-# fix perllocal.pod
+# fix perl'isms that need to be removed
+rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurm/.packlist
+rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurmdb/.packlist
 rm -f %{buildroot}/%{_libdir}/perl5/perllocal.pod
+rm -f %{buildroot}/%{perl_vendorarch}/auto/Slurm*/Slurm*.bs
 
 %post
 /sbin/ldconfig
@@ -359,13 +373,13 @@ if [ $1 -ge 1 ] ; then
 fi
 %endif
 
-%define slurmdocs BUILD.NOTES COPYING DISCLAIMER INSTALL LICENSE.OpenSSL META NEWS README.rst RELEASE_NOTES 
+%define slurmdocs BUILD.NOTES COPYING DISCLAIMER META NEWS README.rst RELEASE_NOTES 
 
 %files
 %defattr(-,root,root,0755)
-%doc %{slurmdocs}
+%doc %{slurmdocs} LICENSE.OpenSSL
 %doc %{_docdir}/%{name}-%{version}
-/etc/ld.so.conf.d/slurm.conf
+%config (noreplace) /etc/ld.so.conf.d/slurm.conf
 %if 0%{?fedora} > 15
 %{_unitdir}/slurmd.service
 %{_unitdir}/slurmctld.service
@@ -412,7 +426,6 @@ fi
 %dir %{_prefix}/include/slurm
 %{_prefix}/include/slurm/*
 %{_mandir}/man3/slurm_*
-%dir %{_libdir}/pkgconfig
 %{_libdir}/pkgconfig/slurm.pc
 %{_libdir}/*.so
 
@@ -542,12 +555,12 @@ fi
 %{_sbindir}/slurmdbd
 %{_mandir}/man5/slurmdbd.*
 %{_mandir}/man8/slurmdbd.*
-%config %{_sysconfdir}/slurmdbd.conf.example
+%config (noreplace) %{_sysconfdir}/slurmdbd.conf.example
 
 %files slurmdb-direct
 %defattr(-,root,root,0755)
 %doc %{slurmdocs}
-%config (noreplace) %{perl_vendorarch}/config.slurmdb.pl
+%config (noreplace) %{perl_vendorlib}/config.slurmdb.pl
 %{_sbindir}/moab_2_slurmdb
 
 %files sql
