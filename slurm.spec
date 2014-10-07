@@ -381,7 +381,12 @@ fi
 %files
 %defattr(-,root,root,0755)
 %doc %{slurmdocs} LICENSE.OpenSSL
+%if 0%{?rhel} > 6
 %doc %{_docdir}/%{name}-%{version}
+%endif
+%if 0%{?fedora} > 15
+%doc %{_docdir}/%{name}-%{version}
+%endif
 %config (noreplace) /etc/ld.so.conf.d/slurm.conf
 %if 0%{?fedora} > 15
 %{_unitdir}/slurmd.service
