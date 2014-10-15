@@ -1,6 +1,6 @@
 Name:		slurm
 Version:	14.03.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Simple LinUx Resource Manager
 
 Group:		System Environment/Base
