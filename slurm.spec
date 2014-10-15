@@ -19,19 +19,19 @@ BuildRequires:	munge-devel, lua-devel, pam-devel, rrdtool-devel, m4, dos2unix
 BuildRequires:	numactl-devel
 %endif
 %if 0
-BuildRequires:	libumad-devel, libmad-devel
+BuildRequires:	libibumad-devel, libibmad-devel
 %endif
 
-%if 0%{?fedora} > 15
-Requires(post): systemd-sysv
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%else
+%if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
 Requires(preun): chkconfig
 Requires(preun): initscripts
 Requires(postun): initscripts
+%else
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+BuildRequires: systemd
 %endif
 
 %description
@@ -43,7 +43,7 @@ scheduling and accounting modules
 %package devel
 Summary: Development package for Slurm
 Group: Development/System
-Requires: slurm = %{version}-%{release}, pkgconfig
+Requires: %{name}%{?_isa} = %{version}-%{release}, pkgconfig
 %description devel
 Development package for Slurm.  This package includes the header files
 and static libraries for the Slurm API
@@ -51,14 +51,14 @@ and static libraries for the Slurm API
 %package auth-none
 Summary: Slurm auth NULL implementation (no authentication)
 Group: System Environment/Base
-Requires: slurm = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description auth-none
 Slurm NULL authentication module
 
 %package munge
 Summary: Slurm authentication and cryptography implementation using Munge
 Group: System Environment/Base
-Requires: slurm = %{version}-%{release}, munge
+Requires: %{name}%{?_isa} = %{version}-%{release}, munge
 BuildRequires: munge-devel munge-libs
 %description munge
 Slurm authentication and cryptography implementation using Munge. Used to
@@ -67,7 +67,7 @@ authenticate user originating an RPC, digitally sign and/or encrypt messages
 %package pam_slurm
 Summary: PAM module for restricting access to compute nodes via Slurm
 Group: System Environment/Base
-Requires: slurm = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 BuildRequires: pam-devel
 %description pam_slurm
 This module restricts access to compute nodes in a cluster where Slurm is in
@@ -78,7 +78,7 @@ according to the Slurm
 %package perlapi
 Summary: Perl API to Slurm
 Group: Development/System
-Requires: slurm = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description perlapi
 Perl API package for Slurm.  This package includes the perl API to provide a
 helpful interface to Slurm through Perl
@@ -86,6 +86,7 @@ helpful interface to Slurm through Perl
 %package plugins
 Summary: Slurm plugins (loadable shared objects)
 Group: System Environment/Base
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description plugins
 Slurm plugins (loadable shared objects) supporting a wide variety of
 architectures and behaviors. These basically provide the building blocks
@@ -95,7 +96,8 @@ are in other packages
 %package sjobexit
 Summary: Slurm job exit code management tools
 Group: Development/System
-Requires: slurm-perlapi = %{version}-%{release}
+Requires: slurm-perlapi%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description sjobexit
 Slurm job exit code management tools. Enables users to alter job exit code
 information for completed jobs
@@ -103,7 +105,7 @@ information for completed jobs
 %package sjstat
 Summary: Perl tool to print Slurm job state information
 Group: Development/System
-Requires: slurm = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description sjstat
 Perl tool to print Slurm job state information. The output is designed to give
 information on the resource usage and availability, as well as information
@@ -114,8 +116,9 @@ utilities will provide more information and greater depth of understanding
 %package slurmdbd
 Summary: Slurm database daemon
 Group: System Environment/Base
-Requires: slurm-plugins = %{version}-%{release}
-Requires: slurm-sql = %{version}-%{release}
+Requires: slurm-plugins%{?_isa} = %{version}-%{release}
+Requires: slurm-sql%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description slurmdbd
 Slurm database daemon. Used to accept and process database RPCs and upload
 database changes to slurmctld daemons on each cluster
@@ -123,27 +126,31 @@ database changes to slurmctld daemons on each cluster
 %package slurmdb-direct
 Summary: Wrappers to write directly to the slurmdb
 Group: Development/System
-Requires: slurm-perlapi = %{version}-%{release}
+Requires: slurm-perlapi%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description slurmdb-direct
 Wrappers to write directly to the slurmdb
 
 %package sql
 Summary: Slurm SQL support
 Group: System Environment/Base
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description sql
 Slurm SQL support. Contains interfaces to MySQL.
 
 %package torque
 Summary: Torque/PBS wrappers for transition from Torque/PBS to Slurm
 Group: Development/System
-Requires: slurm-perlapi = %{version}-%{release}
+Requires: slurm-perlapi%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 %description torque
 Torque wrapper scripts used for helping migrate from Torque/PBS to Slurm
 
 %package lua
 Summary: Slurm lua bindings
 Group: System Environment/Base
-Requires: slurm = %{version}-%{release}, lua
+Requires: lua
+Requires: %{name}%{?_isa} = %{version}-%{release}
 BuildRequires: lua-devel
 %description lua
 Slurm lua bindings
@@ -262,118 +269,69 @@ ln -s %{_sysconfdir}/config.slurmdb.pl %{buildroot}/%{perl_vendorlib}/config.slu
 
 %post
 /sbin/ldconfig
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_post slurmd.service
-%systemd_post slurmctld.service
-%else
-if [ $1 -eq 1 ] ; then
-    # Initial installation 
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-fi
-%endif
-%else # EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -eq 1 ] ; then
     # Initial installation 
     /sbin/chkconfig --add slurmd
 fi
+%else
+%systemd_post slurmd.service
+%systemd_post slurmctld.service
 %endif
 
 %post slurmdbd
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_post slurmdbdd.service
-%else
-if [ $1 -eq 1 ] ; then
-    # Initial installation 
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-fi
-%endif
-%else # EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -eq 1 ] ; then
     # Initial installation 
     /sbin/chkconfig --add slurmdbd
 fi
+%else
+%systemd_post slurmdbdd.service
 %endif
 
 %preun
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_preun slurmd.service
-%systemd_preun slurmctld.service
-%else
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable slurmd.service > /dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable slurmctld.service > /dev/null 2>&1 || :
-    /bin/systemctl stop slurmd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop slurmctld.service > /dev/null 2>&1 || :
-fi
-%endif
-%else # EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
     /sbin/service slurm stop >/dev/null 2>&1 || :
     /sbin/chkconfig --del slurm >/dev/null 2>&1 || :
 fi
+%else
+%systemd_preun slurmd.service
+%systemd_preun slurmctld.service
 %endif
 
 %preun slurmdbd
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_preun slurmdbd.service
-%else
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable slurmdbd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop slurmdbd.service > /dev/null 2>&1 || :
-fi
-%endif
-%else # EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
     /sbin/service slurmdbd stop >/dev/null 2>&1 || :
     /sbin/chkconfig --del slurmdbd >/dev/null 2>&1 || :
 fi
+%else
+%systemd_preun slurmdbd.service
 %endif
 
 %postun
 /sbin/ldconfig
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_postun_with_restart slurmd.service
-%systemd_postun_with_restart slurmctld.service
-%else
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl try-restart slurmd.service >/dev/null 2>&1 || :
-    /bin/systemctl try-restart slurmctld.service >/dev/null 2>&1 || :
-fi
-%endif
-%else #EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
     /sbin/service slurm condrestart
 fi
+%else
+%systemd_postun_with_restart slurmd.service
+%systemd_postun_with_restart slurmctld.service
 %endif
 
 %postun slurmdbd
-%if 0%{?fedora} > 15
-%if 0%{?fedora} > 17
-%systemd_postun_with_restart slurmdbd.service
-%else
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl try-restart slurmdbd.service >/dev/null 2>&1 || :
-fi
-%endif
-%else #EPEL thing
+%if 0%{?rhel} && 0%{?rhel} <= 6
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
     /sbin/service slurmdbd condrestart
 fi
+%else
+%systemd_postun_with_restart slurmdbd.service
 %endif
 
 %define slurmdocs BUILD.NOTES COPYING DISCLAIMER META NEWS README.rst RELEASE_NOTES 
@@ -601,5 +559,9 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Wed Oct 15 2014 David Brown <david.brown@pnnl.gov> - 14.03.8-2
+- Cleanup post*/pre* scripts to be cleaner
+- Fixed up dependencies for sub packages
+
 * Fri Oct 3 2014 David Brown <david.brown@pnnl.gov> - 14.03.8-1
 - Initial build of slurm
