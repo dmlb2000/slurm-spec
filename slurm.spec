@@ -18,9 +18,7 @@ BuildRequires:	munge-devel, lua-devel, pam-devel, rrdtool-devel, m4, dos2unix
 %ifarch %{ix86} x86_64
 BuildRequires:	numactl-devel
 %endif
-%if 0
 BuildRequires:	libibumad-devel, libibmad-devel
-%endif
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
@@ -562,6 +560,7 @@ fi
 * Wed Oct 15 2014 David Brown <david.brown@pnnl.gov> - 14.03.8-2
 - Cleanup post*/pre* scripts to be cleaner
 - Fixed up dependencies for sub packages
+- Added appropriate ibumad/ibmad library packages
 
 * Fri Oct 3 2014 David Brown <david.brown@pnnl.gov> - 14.03.8-1
 - Initial build of slurm
