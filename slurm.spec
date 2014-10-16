@@ -427,6 +427,7 @@ fi
 %{_libdir}/slurm/acct_gather_filesystem_lustre.so
 %{_libdir}/slurm/acct_gather_filesystem_none.so
 %{_libdir}/slurm/acct_gather_infiniband_none.so
+%{_libdir}/slurm/acct_gather_infiniband_ofed.so
 %{_libdir}/slurm/acct_gather_energy_none.so
 %{_libdir}/slurm/acct_gather_energy_ipmi.so
 %{_libdir}/slurm/acct_gather_energy_rapl.so
