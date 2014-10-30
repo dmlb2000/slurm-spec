@@ -1,12 +1,13 @@
 Name:		slurm
-Version:	14.03.8
-Release:	2%{?dist}
+Version:	14.03.9
+Release:	1%{?dist}
 Summary:	Simple LinUx Resource Manager
 
 Group:		System Environment/Base
 License:	GPLv2
 URL:		http://www.schedmd.com
 Source0:	http://www.schedmd.com/download/latest/%{name}-%{version}.tar.bz2
+Patch0:		slurm-sysv-init.patch
 Source1:	slurmd.service
 Source2:	slurmctld.service
 Source3:	slurmdbd.service
@@ -157,9 +158,15 @@ Includes the Slurm proctrack/lua and job_submit/lua plugin
 %{!?_slurm_sysconfdir: %global _slurm_sysconfdir /etc/slurm}
 %define _sysconfdir %_slurm_sysconfdir
 
+%{?filter_setup:
+%filter_provides_in %{python_sitearch}/.*\.so$
+%filter_provides_in %{perl_vendorarch}/.*\.so$
+%filter_setup
+}
+
 %prep
 %setup -q
-
+%patch0 -p1
 
 %build
 for x in auxdir/*.m4 ; do
@@ -192,16 +199,16 @@ mv %{buildroot}%{_libdir}/perl5/S* %{buildroot}%{perl_vendorarch}/
 mv %{buildroot}%{_libdir}/perl5/auto %{buildroot}%{perl_vendorarch}/
 chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurm/Slurm.so
 chmod 0755 %{buildroot}/%{perl_vendorarch}/auto/Slurmdb/Slurmdb.so
-%if 0%{?fedora} > 15
+%if 0%{?rhel} && 0%{?rhel} <= 6
+mkdir -p %{buildroot}/etc/rc.d/init.d
+install -D -m755 etc/init.d.slurm    %{buildroot}/etc/rc.d/init.d/slurm
+install -D -m755 etc/init.d.slurmdbd %{buildroot}/etc/rc.d/init.d/slurmdbd
+%else
 mkdir -vp %{buildroot}%{_unitdir}
 install -m 644 -p %{SOURCE1} %{buildroot}%{_unitdir}/
 install -m 644 -p %{SOURCE2} %{buildroot}%{_unitdir}/
 install -m 644 -p %{SOURCE3} %{buildroot}%{_unitdir}/
 rm -rf %{buildroot}%{_initrddir}
-%else
-mkdir -p %{buildroot}/etc/rc.d/init.d
-install -D -m755 etc/init.d.slurm    %{buildroot}/etc/rc.d/init.d/slurm
-install -D -m755 etc/init.d.slurmdbd %{buildroot}/etc/rc.d/init.d/slurmdbd
 %endif
 install -D -m644 etc/slurm.conf.example %{buildroot}%{_sysconfdir}/slurm.conf.example
 install -D -m644 etc/cgroup.conf.example %{buildroot}%{_sysconfdir}/cgroup.conf.example
@@ -344,11 +351,11 @@ fi
 %doc %{_docdir}/%{name}-%{version}
 %endif
 %config (noreplace) /etc/ld.so.conf.d/slurm.conf
-%if 0%{?fedora} > 15
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/etc/rc.d/init.d/slurm
+%else
 %{_unitdir}/slurmd.service
 %{_unitdir}/slurmctld.service
-%else
-/etc/rc.d/init.d/slurm
 %endif
 %{_bindir}/s*
 %exclude %{_bindir}/sjobexitmod
@@ -512,10 +519,10 @@ fi
 %files slurmdbd
 %defattr(-,root,root,0755)
 %doc %{slurmdocs}
-%if 0%{?fedora} > 15
-%{_unitdir}/slurmdbd.service
-%else
+%if 0%{?rhel} && 0%{?rhel} <= 6
 /etc/rc.d/init.d/slurmdbd
+%else
+%{_unitdir}/slurmdbd.service
 %endif
 %{_sbindir}/slurmdbd
 %{_mandir}/man5/slurmdbd.*
@@ -558,6 +565,9 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Wed Oct 29 2014 David Brown <david.brown@pnnl.gov> - 14.03.9-1
+- New upstream version
+
 * Wed Oct 15 2014 David Brown <david.brown@pnnl.gov> - 14.03.8-2
 - Cleanup post*/pre* scripts to be cleaner
 - Fixed up dependencies for sub packages

@@ -1,0 +1,20 @@
+--- a/etc/init.d.slurm.in	2014-10-16 21:10:10.974469584 -0700
++++ b/etc/init.d.slurm.in	2014-10-16 21:11:36.556383107 -0700
+@@ -1,5 +1,7 @@
+ #!/bin/bash
+ #
++# slurm Simple LinUx Resource Manager
++#
+ # chkconfig: 345 90 10
+ # description: SLURM is a simple resource management system which \
+ #              manages exclusive access to a set of compute \
+--- a/etc/init.d.slurmdbd.in	2014-10-16 21:12:07.788625632 -0700
++++ b/etc/init.d.slurmdbd.in	2014-10-16 21:12:38.474881409 -0700
+@@ -1,5 +1,7 @@
+ #!/bin/bash
+ #
++# slurmdbd SLURM Database Daemon
++#
+ # chkconfig: 345 90 10
+ # description: SLURMDBD is a database server interface for \
+ #              SLURM (Simple Linux Utility for Resource Management).
