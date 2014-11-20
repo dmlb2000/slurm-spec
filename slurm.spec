@@ -1,5 +1,5 @@
 Name:		slurm
-Version:	14.03.9
+Version:	14.11.0
 Release:	1%{?dist}
 Summary:	Simple LinUx Resource Manager
 
@@ -473,6 +473,7 @@ fi
 %{_libdir}/slurm/mpi_pmi2.so
 %{_libdir}/slurm/mpi_none.so
 %{_libdir}/slurm/preempt_none.so
+%{_libdir}/slurm/preempt_job_prio.so
 %{_libdir}/slurm/preempt_partition_prio.so
 %{_libdir}/slurm/preempt_qos.so
 %{_libdir}/slurm/priority_basic.so
@@ -481,6 +482,8 @@ fi
 %{_libdir}/slurm/proctrack_linuxproc.so
 %{_libdir}/slurm/proctrack_pgid.so
 %{_libdir}/slurm/launch_slurm.so
+%{_libdir}/slurm/route_default.so
+%{_libdir}/slurm/route_topology.so
 %{_libdir}/slurm/sched_backfill.so
 %{_libdir}/slurm/sched_builtin.so
 %{_libdir}/slurm/sched_hold.so
@@ -565,6 +568,9 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Wed Nov 19 2014 David Brown <david.brown@pnnl.gov> - 14.11.0-1
+- New upstream version
+
 * Wed Oct 29 2014 David Brown <david.brown@pnnl.gov> - 14.03.9-1
 - New upstream version
 
