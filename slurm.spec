@@ -1,5 +1,5 @@
 Name:		slurm
-Version:	14.11.0
+Version:	14.11.6
 Release:	1%{?dist}
 Summary:	Simple LinUx Resource Manager
 
