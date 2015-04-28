@@ -568,6 +568,9 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Tue Apr 28 2015 David Brown <david.brown@pnnl.gov> - 14.11.6-1
+- New upstream version
+
 * Wed Nov 19 2014 David Brown <david.brown@pnnl.gov> - 14.11.0-1
 - New upstream version
 
