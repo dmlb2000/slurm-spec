@@ -416,6 +416,7 @@ fi
 %defattr(-,root,root,0755)
 %doc %{slurmdocs}
 /%{_lib}/security/pam_slurm.so
+/%{_lib}/security/pam_slurm_adopt.so
 
 %files perlapi
 %defattr(-,root,root,0755)
@@ -428,6 +429,7 @@ fi
 %defattr(-,root,root,0755)
 %doc %{slurmdocs}
 %dir %{_libdir}/slurm
+%{_mandir}/man5/burst_buffer.conf.5.gz
 %{_libdir}/slurm/accounting_storage_filetxt.so
 %{_libdir}/slurm/accounting_storage_none.so
 %{_libdir}/slurm/accounting_storage_slurmdbd.so
@@ -506,6 +508,14 @@ fi
 %{_libdir}/slurm/topology_node_rank.so
 %{_libdir}/slurm/topology_none.so
 %{_libdir}/slurm/topology_tree.so
+%{_libdir}/slurm/acct_gather_energy_cray.so
+%{_libdir}/slurm/acct_gather_energy_ibmaem.so
+%{_libdir}/slurm/burst_buffer_generic.so
+%{_libdir}/slurm/layouts_power_cpufreq.so
+%{_libdir}/slurm/layouts_power_default.so
+%{_libdir}/slurm/layouts_unit_default.so
+%{_libdir}/slurm/power_none.so
+%{_libdir}/slurm/topology_hypercube.so
 
 %files sjobexit
 %defattr(-,root,root,0755)
