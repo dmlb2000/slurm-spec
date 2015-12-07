@@ -1,5 +1,5 @@
 Name:		slurm
-Version:	14.11.6
+Version:	15.08.4
 Release:	1%{?dist}
 Summary:	Simple LinUx Resource Manager
 
@@ -568,6 +568,9 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Sun Dec 06 2015 David Brown <david.brown@pnnl.gov> - 15.08.4-1
+- New upstream version
+
 * Tue Apr 28 2015 David Brown <david.brown@pnnl.gov> - 14.11.6-1
 - New upstream version
 
