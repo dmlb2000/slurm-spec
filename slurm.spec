@@ -165,12 +165,12 @@ Includes the Slurm proctrack/lua and job_submit/lua plugin
 %prep
 %setup -q
 %patch0 -p1
-
-%build
 for x in contribs/perlapi/libslurm*/perl/Makefile.PL.in ; do
   sed -i 's/-Wl,-rpath,[^ ]*\([ "]\)/\1/g' $x
 done
+sed -i '/^.\\ / D' ./doc/man/man5/burst_buffer.conf.5
 
+%build
 #Fix for build and linking failure
 CFLAGS="$RPM_OPT_FLAGS -Wl,-z,lazy"
 CXXFLAGS="$RPM_OPT_FLAGS -Wl,-z,lazy"
