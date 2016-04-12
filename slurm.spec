@@ -1,5 +1,5 @@
 Name:		slurm
-Version:	15.08.8
+Version:	15.08.10
 Release:	1%{?dist}
 Summary:	Simple LinUx Resource Manager
 
@@ -142,6 +142,7 @@ Summary: Torque/PBS wrappers for transition from Torque/PBS to Slurm
 Group: Development/System
 Requires: slurm-perlapi%{?_isa} = %{version}-%{release}
 Requires: %{name}%{?_isa} = %{version}-%{release}
+Conflicts: torque
 %description torque
 Torque wrapper scripts used for helping migrate from Torque/PBS to Slurm
 
@@ -578,6 +579,10 @@ fi
 %{_libdir}/slurm/proctrack_lua.so
 
 %changelog
+* Tue Apr 12 2016 David Brown <david.brown@pnnl.gov> - 15.08.10-1
+- New upstream version
+- Added torque conflicts
+
 * Sun Feb 21 2016 David Brown <david.brown@pnnl.gov> - 15.08.8-1
 - New upstream version
 
