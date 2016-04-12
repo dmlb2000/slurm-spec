@@ -8,9 +8,6 @@ License:	GPLv2
 URL:		http://www.schedmd.com
 Source0:	http://www.schedmd.com/download/latest/%{name}-%{version}.tar.bz2
 Patch0:		slurm-sysv-init.patch
-Source1:	slurmd.service
-Source2:	slurmctld.service
-Source3:	slurmdbd.service
 
 BuildRequires:	python, gtk2-devel, ncurses-devel, readline-devel, openssl-devel
 BuildRequires:	mysql-devel, hwloc-devel, hdf5-devel, libtool
