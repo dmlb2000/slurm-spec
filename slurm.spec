@@ -170,15 +170,15 @@ Includes the Slurm proctrack/lua and job_submit/lua plugin
 %patch0 -p1
 
 %build
-for x in auxdir/*.m4 ; do
-  sed -i 's/-Wl,-rpath -Wl,[^ ]* //' $x
-done
 for x in contribs/perlapi/libslurm*/perl/Makefile.PL.in ; do
   sed -i 's/-Wl,-rpath,[^ ]*\([ "]\)/\1/g' $x
 done
+
+#Fix for build and linking failure
+CFLAGS="$RPM_OPT_FLAGS -Wl,-z,lazy"
+CXXFLAGS="$RPM_OPT_FLAGS -Wl,-z,lazy"
 dos2unix ./contribs/torque/qalter.pl
 dos2unix ./contribs/torque/qrerun.pl
-autoreconf
 %configure \
   --with-ssl \
   --with-munge \
@@ -206,9 +206,9 @@ install -D -m755 etc/init.d.slurm    %{buildroot}/etc/rc.d/init.d/slurm
 install -D -m755 etc/init.d.slurmdbd %{buildroot}/etc/rc.d/init.d/slurmdbd
 %else
 mkdir -vp %{buildroot}%{_unitdir}
-install -m 644 -p %{SOURCE1} %{buildroot}%{_unitdir}/
-install -m 644 -p %{SOURCE2} %{buildroot}%{_unitdir}/
-install -m 644 -p %{SOURCE3} %{buildroot}%{_unitdir}/
+install -m 644 -p etc/slurmctld.service %{buildroot}%{_unitdir}/
+install -m 644 -p etc/slurmd.service %{buildroot}%{_unitdir}/
+install -m 644 -p etc/slurmdbd.service %{buildroot}%{_unitdir}/
 rm -rf %{buildroot}%{_initrddir}
 %endif
 install -D -m644 etc/slurm.conf.example %{buildroot}%{_sysconfdir}/slurm.conf.example
